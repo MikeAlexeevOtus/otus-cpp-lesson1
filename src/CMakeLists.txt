@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(helloworld VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 
+configure_file(version.h.in version.h)
+
 add_executable(helloworld_cli hello.cpp)
 
 set_target_properties(helloworld_cli PROPERTIES
