@@ -3,11 +3,16 @@ before_script:
   - sudo apt-get install libboost-test-dev -y
   - echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" | sudo tee -a /etc/apt/sources.list
   - sudo apt-get update -qq
+
 script:
   - cmake src
   - cmake --build .
   - cmake --build . --target test
   - cmake --build . --target package
+  - sudo dpkg -i helloworld-*.deb
+  - helloworld_cli
+  - helloworld_cli | grep -qi "hello.*world.*${TRAVIS_BUILD_NUMBER}"
+
 deploy:
   provider: script
   skip_cleanup: true
