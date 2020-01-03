@@ -5,8 +5,17 @@ project(helloworld VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 configure_file(version.h.in version.h)
 
 add_executable(helloworld_cli hello.cpp)
+add_library(helloworld lib.cpp)
 
-set_target_properties(helloworld_cli PROPERTIES
+target_include_directories(helloworld
+    PRIVATE "${CMAKE_BINARY_DIR}"
+)
+
+target_link_libraries(helloworld_cli PRIVATE
+    helloworld
+)
+
+set_target_properties(helloworld_cli helloworld PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
 )
