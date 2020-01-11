@@ -1,25 +1,21 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(helloworld VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
-
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 configure_file(version.h.in version.h)
 
 add_executable(helloworld_cli hello.cpp)
 add_executable(test_version test_version.cpp)
+add_executable(gtest_version gtest_version.cpp)
 add_library(helloworld lib.cpp)
 
-target_include_directories(helloworld PRIVATE
-    "${CMAKE_BINARY_DIR}"
-)
+target_include_directories(helloworld PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-target_link_libraries(helloworld_cli PRIVATE
-    helloworld
-)
-
-target_link_libraries(test_version
-    ${Boost_LIBRARIES}
+target_link_libraries(helloworld_cli PRIVATE helloworld)
+target_link_libraries(test_version PRIVATE ${Boost_LIBRARIES} helloworld)
+target_link_libraries(gtest_version PRIVATE
+    gtest
+    gtest_main
     helloworld
 )
 
@@ -28,14 +24,17 @@ set_target_properties(test_version PROPERTIES
     INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
 )
 
-set_target_properties(helloworld_cli helloworld test_version PROPERTIES
+set_target_properties(helloworld_cli helloworld test_version gtest_version PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
 )
 
-
 if (MSVC)
     set(COMPILE_OPTS /W4)
+
+    # Prevent overriding the parent project's compiler/linker
+    # settings on Windows
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 else ()
     set(COMPILE_OPTS -Wall -Wextra -pedantic -Werror)
 endif()
@@ -56,6 +55,5 @@ set(CPACK_PACKAGE_CONTACT mike.42.alexeev@yandex.ru)
 
 include(CPack)
 
-enable_testing()
-
 add_test(test_version test_version)
+add_test(gtest_version gtest_version)

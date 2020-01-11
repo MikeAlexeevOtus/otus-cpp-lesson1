@@ -5,9 +5,9 @@ before_script:
   - sudo apt-get update -qq
 
 script:
-  - cmake src
+  - cmake .
   - cmake --build .
-  - cmake --build . --target test
+  - CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
   - cmake --build . --target package
   - sudo dpkg -i helloworld-*.deb
   - helloworld_cli
