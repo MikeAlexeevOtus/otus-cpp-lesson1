@@ -9,5 +9,10 @@ project(helloworld VERSION 0.0.${TRAVIS_BUILD_NUMBER})
 
 enable_testing()
 
+# exclude gtest from package
+# see https://stackoverflow.com/a/51746390
+set(INSTALL_GMOCK 0)
+set(INSTALL_GTEST 0)
+
 add_subdirectory(external/googletest gtest)
 add_subdirectory(src helloworld)
